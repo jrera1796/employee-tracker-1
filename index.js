@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const consoleTable = require('console.table');
+const cTable = require('console.table');
 
 const db = mysql.createConnection(
     {
@@ -64,3 +64,31 @@ function promptUser() {
          }
     })
 };
+
+function allEmployees(){
+
+}
+
+function allDepartements(){
+
+}
+
+function allRoles(){
+
+}
+
+function addDepartement(){
+
+}
+
+function addEmployee(){
+
+}
+
+function addRole(){
+
+}
+
+function updateRole(){
+    
+}
