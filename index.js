@@ -14,6 +14,12 @@ const db = mysql.createConnection(
     console.log('Connected to the trackemployees database.')
 );
 
+db.connect(function(err) {
+    if (err) throw err;
+   
+    promptUser();
+  });
+
 
 function promptUser() {
     return inquirer.prompt([
@@ -61,20 +67,38 @@ function promptUser() {
             case 'update employee role':
                 updateRole();
             break;
+
+            case 'quit':
+            break;    
          }
     })
 };
 
 function allEmployees(){
-
+    const sql = `SELECT * FROM employee`
+    db.query(sql, (err, res) => {
+        if (err) throw err
+        console.table(res)
+        promptUser()
+      });
 }
 
 function allDepartements(){
-
+    const sql = `SELECT * FROM department`
+    db.query(sql, (err, res) => {
+        if (err) throw err
+        console.table(res)
+        promptUser()
+      });
 }
 
 function allRoles(){
-
+    const sql = `SELECT * FROM role`
+    db.query(sql, (err, res) => {
+        if (err) throw err
+        console.table(res)
+        promptUser()
+      });
 }
 
 function addDepartement(){
@@ -90,5 +114,5 @@ function addRole(){
 }
 
 function updateRole(){
-    
+
 }
