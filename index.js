@@ -102,15 +102,93 @@ function allRoles(){
 }
 
 function addDepartement(){
+    return inquirer.prompt([
+        {
+          name: 'name',
+          type: 'input',
+          message: 'what is the name of the departement?'
+        },
+        {
+            name: 'id',
+            type: 'input',
+            message: 'what is the id of the departement?'
+        }
 
+    ]).then(answers => {
+            const sql = `INSERT INTO department (id, name) VALUES (?,?)`;
+            const params = [answers.id, answers.name]
+            db.query(sql, params, (err, res) => {
+                if (err) throw err 
+                console.table(res);
+                promptUser();
+            }
+        )
+    })
 }
 
 function addEmployee(){
+    return inquirer.prompt([
+        {
+          name: 'firstname',
+          type: 'input',
+          message: 'what is the first name of the employee?'
+        },
+        {
+            name: 'lastname',
+            type: 'input',
+            message: 'what is the last name of the employee?'
+        },
+        {
+            name: 'roleid',
+            type: 'input',
+            message: 'what is the role id of the employee?'
+        },
+        {
+            name: 'managerid',
+            type: 'input',
+            message: 'what is the manager id of the employee?'
+        }
 
+    ]).then(answers => {
+            const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
+            const params = [answers.firstname, answers.lastname, answers.roleid, answers.managerid]
+            db.query(sql, params, (err, res) => {
+                if (err) throw err 
+                console.table(res);
+                promptUser();
+            }
+        )
+    })
 }
 
 function addRole(){
+    return inquirer.prompt([
+        {
+          name: 'title',
+          type: 'input',
+          message: 'what is the title of the role?'
+        },
+        {
+            name: 'salary',
+            type: 'input',
+            message: 'what is the salary of the role?'
+        },
+        {
+            name: 'departementid',
+            type: 'input',
+            message: 'what is the departement id of the role?'
+        }
 
+    ]).then(answers => {
+            const sql = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`;
+            const params = [answers.title, answers.salary, answers.departementid]
+            db.query(sql, params, (err, res) => {
+                if (err) throw err 
+                console.table(res);
+                promptUser();
+            }
+        )
+    })
 }
 
 function updateRole(){
