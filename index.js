@@ -39,6 +39,7 @@ function promptUser() {
             'delete department',
             'delete employee',
             'view by manager',
+            'view by department',
             'view budget',
             'quit'
             ]
@@ -87,6 +88,10 @@ function promptUser() {
 
             case 'view by manager':
                 allByManager();
+            break;    
+
+            case 'view by department':
+                allByDep();
             break;    
 
             case 'view budget':
@@ -364,7 +369,7 @@ function allByManager(){
     //         choices: employee,
     //         }
     //     ]).then(ans =>{
-                const sql = `SELECT first_name, last_name, role_id, manager_id FROM employee GROUP BY manager_id`;
+                const sql = `SELECT * FROM employee ORDER BY manager_id`;
                 // const params = [ans.employee]
                 db.query(sql, (err, res) => {
                   if (err) throw err;
@@ -386,4 +391,15 @@ function viewBudget(){
                   console.table(res);
                   promptUser();
                 });            
+}
+
+function allByDep(){
+    const sql = `SELECT * FROM employee 
+                LEFT JOIN roles ON employee.role_id = roles.id
+                LEFT JOIN departments ON roles.department_id = departments.id  ORDER BY department_id`;
+    db.query(sql, (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      promptUser();
+    });
 }
