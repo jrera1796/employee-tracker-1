@@ -37,6 +37,7 @@ function promptUser() {
             'update employee role',
             'delete role',
             'delete department',
+            'delete employee',
             'quit'
             ]
     }
@@ -76,6 +77,10 @@ function promptUser() {
 
             case 'delete department':
                 deleteDep();
+            break;    
+
+            case 'delete employee':
+                deleteEmployee();
             break;    
 
             case 'quit':
@@ -263,7 +268,6 @@ function deleteRole(){
             salary: `${salary}`,
             name: `${title}`,
         }));
-        // console.log(role)
         return inquirer.prompt([
             {
             type: 'list',
@@ -274,8 +278,6 @@ function deleteRole(){
         ]).then(ans =>{
                 const sql = `DELETE FROM roles WHERE id = ?`;
                 const params = [ans.role]
-                // console.log(answers.title)
-                // console.log(ans.role)
                 db.query(sql, params, (err, res) => {
                   if (err) throw err;
                   promptUser();
@@ -283,6 +285,7 @@ function deleteRole(){
         })
     })
 }
+
 function deleteDep(){
     const sql = `SELECT * FROM departments`;
     db.query(sql, (err, res) => {
@@ -291,7 +294,6 @@ function deleteDep(){
             value: id,
             name: `${name}`,
         }));
-        // console.log(role)
         return inquirer.prompt([
             {
             type: 'list',
@@ -302,8 +304,32 @@ function deleteDep(){
         ]).then(ans =>{
                 const sql = `DELETE FROM departments WHERE id = ?`;
                 const params = [ans.department]
-                // console.log(answers.title)
-                // console.log(ans.role)
+                db.query(sql, params, (err, res) => {
+                  if (err) throw err;
+                  promptUser();
+                });
+        })
+    })
+}
+
+function deleteEmployee(){
+    const sql = `SELECT * FROM employee`;
+    db.query(sql, (err, res) => {
+        if (err) throw err
+        const employee = res.map(({ id, first_name, last_name }) => ({
+            value: id,
+            name: `${first_name} ${last_name}`,
+        }));
+        return inquirer.prompt([
+            {
+            type: 'list',
+            name: 'employee',
+            message: 'select department to delete',
+            choices: employee,
+            }
+        ]).then(ans =>{
+                const sql = `DELETE FROM employee WHERE id = ?`;
+                const params = [ans.employee]
                 db.query(sql, params, (err, res) => {
                   if (err) throw err;
                   promptUser();
