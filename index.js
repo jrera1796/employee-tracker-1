@@ -35,6 +35,7 @@ function promptUser() {
             'add role',
             'add employee',
             'update employee role',
+            'delete role',
             'quit'
             ]
     }
@@ -67,6 +68,10 @@ function promptUser() {
             case 'update employee role':
                 updateRole();
             break;
+
+            case 'delete role':
+                deleteRole();
+            break;    
 
             case 'quit':
                 db.end();
@@ -241,3 +246,35 @@ function updateRole(){
         })
     }
 )}
+
+
+function deleteRole(){
+    const sql = `SELECT * FROM roles`;
+    db.query(sql, (err, res) => {
+        if (err) throw err
+            const role = res.map(({ id, title, salary }) => ({
+            value: id,
+            title: `${title}`,
+            salary: `${salary}`,
+            name: `${title}`,
+        }));
+        // console.log(role)
+        return inquirer.prompt([
+            {
+            type: 'list',
+            name: 'role',
+            message: 'select role to delete',
+            choices: role,
+            }
+        ]).then(ans =>{
+                const sql = `DELETE FROM roles WHERE id = ?`;
+                const params = [ans.role]
+                // console.log(answers.title)
+                // console.log(ans.role)
+                db.query(sql, params, (err, res) => {
+                  if (err) throw err;
+                  promptUser();
+                });
+        })
+    })
+}
