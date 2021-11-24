@@ -120,7 +120,7 @@ function addDepartement(){
             const params = [answers.id, answers.name]
             db.query(sql, params, (err, res) => {
                 if (err) throw err 
-                console.table(res);
+                // console.table(res);
                 promptUser();
             }
         )
@@ -155,7 +155,7 @@ function addEmployee(){
             const params = [answers.firstname, answers.lastname, answers.roleid, answers.managerid]
             db.query(sql, params, (err, res) => {
                 if (err) throw err 
-                console.table(res);
+                // console.table(answers);
                 promptUser();
             }
         )
@@ -185,7 +185,7 @@ function addRole(){
             const params = [answers.title, answers.salary, answers.departementid]
             db.query(sql, params, (err, res) => {
                 if (err) throw err 
-                console.table(res);
+                // console.table(answers);
                 promptUser();
             }
         )
