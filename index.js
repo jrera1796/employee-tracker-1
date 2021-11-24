@@ -69,6 +69,7 @@ function promptUser() {
             break;
 
             case 'quit':
+                db.end();
             break;    
          }
     })
@@ -84,7 +85,7 @@ function allEmployees(){
 }
 
 function allDepartements(){
-    const sql = `SELECT * FROM department`
+    const sql = `SELECT * FROM departments`
     db.query(sql, (err, res) => {
         if (err) throw err
         console.table(res)
@@ -93,7 +94,7 @@ function allDepartements(){
 }
 
 function allRoles(){
-    const sql = `SELECT * FROM role`
+    const sql = `SELECT * FROM roles`
     db.query(sql, (err, res) => {
         if (err) throw err
         console.table(res)
@@ -115,7 +116,7 @@ function addDepartement(){
         }
 
     ]).then(answers => {
-            const sql = `INSERT INTO department (id, name) VALUES (?,?)`;
+            const sql = `INSERT INTO departments (id, name) VALUES (?,?)`;
             const params = [answers.id, answers.name]
             db.query(sql, params, (err, res) => {
                 if (err) throw err 
@@ -180,7 +181,7 @@ function addRole(){
         }
 
     ]).then(answers => {
-            const sql = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`;
+            const sql = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)`;
             const params = [answers.title, answers.salary, answers.departementid]
             db.query(sql, params, (err, res) => {
                 if (err) throw err 
@@ -192,5 +193,51 @@ function addRole(){
 }
 
 function updateRole(){
-
-}
+   const sql = `SELECT * FROM employee ORDER BY last_name`;
+   db.query(sql, (err, res) => {
+       if (err) throw err
+       const employee = res.map(({ id, first_name, last_name }) => ({
+        value: id,
+        name: `${first_name} ${last_name}`,
+      }));
+    //    console.log(employee)
+            return inquirer.prompt([
+            {
+                name: 'title',
+                type: 'list',
+                message: 'select employee to update their role',
+                choices: employee
+            },
+        ]).then(answers => {
+            // console.log(answers)
+            const sql = `SELECT * FROM roles`;
+            db.query(sql, (err, res) => {
+                if (err) throw err
+                    const role = res.map(({ id, title, salary }) => ({
+                    value: id,
+                    title: `${title}`,
+                    salary: `${salary}`,
+                    name: `${title}`,
+                }));
+                // console.log(role)
+                return inquirer.prompt([
+                    {
+                    type: 'list',
+                    name: 'role',
+                    message: 'select role',
+                    choices: role,
+                    }
+                ]).then(ans =>{
+                        const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+                        const params = [ans.role, answers.title]
+                        // console.log(answers.title)
+                        // console.log(ans.role)
+                        db.query(sql, params, (err, res) => {
+                          if (err) throw err;
+                          promptUser();
+                        });
+                })
+            })
+        })
+    }
+)}
