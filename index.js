@@ -38,6 +38,8 @@ function promptUser() {
             'delete role',
             'delete department',
             'delete employee',
+            'view by manager',
+            'view budget',
             'quit'
             ]
     }
@@ -81,6 +83,14 @@ function promptUser() {
 
             case 'delete employee':
                 deleteEmployee();
+            break;    
+
+            case 'view by manager':
+                allByManager();
+            break;    
+
+            case 'view budget':
+                viewBudget();
             break;    
 
             case 'quit':
@@ -336,4 +346,44 @@ function deleteEmployee(){
                 });
         })
     })
+}
+
+function allByManager(){
+    // const sql = `SELECT * FROM employee`
+    // db.query(sql, (err, res) => {
+    //     if (err) throw err
+    //     const employee = res.map(({ id, first_name, last_name }) => ({
+    //         value: id,
+    //         name: `${first_name} ${last_name}`,
+    //     }));
+    //     return inquirer.prompt([
+    //         {
+    //         type: 'list',
+    //         name: 'employee',
+    //         message: 'select manager to see the managed employees',
+    //         choices: employee,
+    //         }
+    //     ]).then(ans =>{
+                const sql = `SELECT first_name, last_name, role_id, manager_id FROM employee GROUP BY manager_id`;
+                // const params = [ans.employee]
+                db.query(sql, (err, res) => {
+                  if (err) throw err;
+                  console.table(res);
+                  promptUser();
+                });
+    //     })
+    // })
+
+}
+
+function viewBudget(){
+        const sql = `SELECT departments.id, departments.name, SUM(roles.salary) AS budget FROM employee
+                    LEFT JOIN roles ON employee.role_id = roles.id
+                    LEFT JOIN departments ON roles.department_id = departments.id
+                    GROUP BY departments.id, departments.name`
+         db.query(sql, (err, res) => {
+                  if (err) throw err;
+                  console.table(res);
+                  promptUser();
+                });            
 }
