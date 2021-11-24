@@ -41,6 +41,8 @@ function promptUser() {
             'view by manager',
             'view by department',
             'view budget',
+            'update manager',
+            'seek help',
             'quit'
             ]
     }
@@ -96,6 +98,14 @@ function promptUser() {
 
             case 'view budget':
                 viewBudget();
+            break;    
+
+            case 'seek help':
+                seekHelp();
+            break;    
+
+            case 'update manager':
+                updateManager();
             break;    
 
             case 'quit':
@@ -354,31 +364,13 @@ function deleteEmployee(){
 }
 
 function allByManager(){
-    // const sql = `SELECT * FROM employee`
-    // db.query(sql, (err, res) => {
-    //     if (err) throw err
-    //     const employee = res.map(({ id, first_name, last_name }) => ({
-    //         value: id,
-    //         name: `${first_name} ${last_name}`,
-    //     }));
-    //     return inquirer.prompt([
-    //         {
-    //         type: 'list',
-    //         name: 'employee',
-    //         message: 'select manager to see the managed employees',
-    //         choices: employee,
-    //         }
-    //     ]).then(ans =>{
+
                 const sql = `SELECT * FROM employee ORDER BY manager_id`;
-                // const params = [ans.employee]
                 db.query(sql, (err, res) => {
                   if (err) throw err;
                   console.table(res);
                   promptUser();
                 });
-    //     })
-    // })
-
 }
 
 function viewBudget(){
@@ -402,4 +394,75 @@ function allByDep(){
       console.table(res);
       promptUser();
     });
+}
+
+function seekHelp(){
+        const sql = `SELECT * FROM employee`
+    db.query(sql, (err, res) => {
+        if (err) throw err
+        const employee = res.map(({ id, first_name, last_name }) => ({
+            value: id,
+            name: `${first_name} ${last_name}`,
+        }));
+        return inquirer.prompt([
+            {
+            type: 'list',
+            name: 'employee',
+            message: 'select manager to see the managed employees',
+            choices: employee,
+            }
+        ]).then(ans =>{
+        const sql = `SELECT * FROM employee WHERE manager_id =?`;
+        const params = [ans.employee]
+        db.query(sql, params, (err, res) => {
+          if (err) throw err;
+          console.table(res);
+          promptUser();
+        });
+    })
+})
+
+}
+
+function updateManager(){
+    const sql = `SELECT * FROM employee ORDER BY last_name`;
+    db.query(sql, (err, res) => {
+        if (err) throw err
+        const employee = res.map(({ id, first_name, last_name }) => ({
+         value: id,
+         name: `${first_name} ${last_name}`,
+       }));
+             return inquirer.prompt([
+             {
+                 name: 'title',
+                 type: 'list',
+                 message: 'select employee to update their manager',
+                 choices: employee
+             },
+         ]).then(answers => {
+             const sql = `SELECT * FROM employee`;
+             db.query(sql, (err, res) => {
+                 if (err) throw err
+                     const manager = res.map(({ id, first_name, last_name }) => ({
+                        value: id,
+                        name: `${first_name} ${last_name}`,
+                 }));
+                 return inquirer.prompt([
+                     {
+                     type: 'list',
+                     name: 'manager',
+                     message: 'select manager',
+                     choices: manager,
+                     }
+                 ]).then(ans =>{
+                         const sql = `UPDATE employee SET manager_id = ? WHERE id = ?`;
+                         const params = [ans.manager, answers.title]
+                         db.query(sql, params, (err, res) => {
+                           if (err) throw err;
+                           promptUser();
+                         });
+                 })
+             })
+         })
+    })
 }
