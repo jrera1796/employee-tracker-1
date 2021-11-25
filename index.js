@@ -417,7 +417,13 @@ function findDirectRep(){
         db.query(sql, params, (err, res) => {
           if (err) throw err;
           if (res.length === 0){
+              console.log('===================')
+              console.log('===================')
+              console.log('===================')
               console.log ('no direct reports found for this employee')
+              console.log('===================')
+              console.log('===================')
+              console.log('===================')
           } else{
           console.table(res);
           }
