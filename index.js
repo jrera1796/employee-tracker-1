@@ -24,7 +24,7 @@ db.connect(function(err) {
 function promptUser() {
     return inquirer.prompt([
     {
-    type: 'list',
+    type: 'rawlist',
     message: 'Select an action:',
     name: 'action',
     choices: [
@@ -38,11 +38,11 @@ function promptUser() {
             'delete role',
             'delete department',
             'delete employee',
-            'view by manager',
+            'view all employees by manager',
             'view by department',
             'view budget',
             'update manager',
-            'seek help',
+            'view employees that report to a manager',
             'quit'
             ]
     }
@@ -88,7 +88,7 @@ function promptUser() {
                 deleteEmployee();
             break;    
 
-            case 'view by manager':
+            case 'view all employees by manager':
                 allByManager();
             break;    
 
@@ -100,8 +100,8 @@ function promptUser() {
                 viewBudget();
             break;    
 
-            case 'seek help':
-                seekHelp();
+            case 'view employees that report to a manager':
+                findDirectRep();
             break;    
 
             case 'update manager':
@@ -244,7 +244,7 @@ function updateRole(){
             return inquirer.prompt([
             {
                 name: 'title',
-                type: 'list',
+                type: 'rawlist',
                 message: 'select employee to update their role',
                 choices: employee
             },
@@ -262,7 +262,7 @@ function updateRole(){
                 // console.log(role)
                 return inquirer.prompt([
                     {
-                    type: 'list',
+                    type: 'rawlist',
                     name: 'role',
                     message: 'select role',
                     choices: role,
@@ -295,7 +295,7 @@ function deleteRole(){
         }));
         return inquirer.prompt([
             {
-            type: 'list',
+            type: 'rawlist',
             name: 'role',
             message: 'select role to delete',
             choices: role,
@@ -321,7 +321,7 @@ function deleteDep(){
         }));
         return inquirer.prompt([
             {
-            type: 'list',
+            type: 'rawlist',
             name: 'department',
             message: 'select department to delete',
             choices: departement,
@@ -347,7 +347,7 @@ function deleteEmployee(){
         }));
         return inquirer.prompt([
             {
-            type: 'list',
+            type: 'rawlist',
             name: 'employee',
             message: 'select department to delete',
             choices: employee,
@@ -396,9 +396,9 @@ function allByDep(){
     });
 }
 
-function seekHelp(){
+function findDirectRep(){
         const sql = `SELECT * FROM employee`
-    db.query(sql, (err, res) => {
+        db.query(sql, (err, res) => {
         if (err) throw err
         const employee = res.map(({ id, first_name, last_name }) => ({
             value: id,
@@ -406,7 +406,7 @@ function seekHelp(){
         }));
         return inquirer.prompt([
             {
-            type: 'list',
+            type: 'rawlist',
             name: 'employee',
             message: 'select manager to see the managed employees',
             choices: employee,
@@ -416,7 +416,11 @@ function seekHelp(){
         const params = [ans.employee]
         db.query(sql, params, (err, res) => {
           if (err) throw err;
+          if (res.length === 0){
+              console.log ('no direct reports found for this employee')
+          } else{
           console.table(res);
+          }
           promptUser();
         });
     })
@@ -435,7 +439,7 @@ function updateManager(){
              return inquirer.prompt([
              {
                  name: 'title',
-                 type: 'list',
+                 type: 'rawlist',
                  message: 'select employee to update their manager',
                  choices: employee
              },
@@ -449,7 +453,7 @@ function updateManager(){
                  }));
                  return inquirer.prompt([
                      {
-                     type: 'list',
+                     type: 'rawlist',
                      name: 'manager',
                      message: 'select manager',
                      choices: manager,
